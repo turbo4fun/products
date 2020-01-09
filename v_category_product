@@ -1,0 +1,35 @@
+SELECT
+    `t`.`OrderPath` AS `OrderPath`,
+    `t`.`CategoryId` AS `CategoryId`,
+    `t`.`Level` AS `Level`,
+    `t`.`Name` AS `Name`,
+    `t`.`IsProduct` AS `IsProduct`
+FROM
+    (
+    SELECT
+        `a`.`OrderPath` AS `OrderPath`,
+        `a`.`CategoryId` AS `CategoryId`,
+        `a`.`Level` AS `Level`,
+        `a`.`CategoryName` AS `Name`,
+        0 AS `IsProduct`
+    FROM
+        `nette`.`v_category` `a`
+    UNION ALL
+SELECT
+    `a`.`OrderPath` AS `OrderPath`,
+    `a`.`CategoryId` AS `CategoryId`,
+    `a`.`Level` + 1 AS `Level`,
+    `b`.`ProductName` AS `Name`,
+    1 AS `IsProduct`
+FROM
+    (
+        `nette`.`product` `b`
+    LEFT JOIN `nette`.`v_category` `a`
+    ON
+        (`a`.`CategoryId` = `b`.`CategoryId`)
+    )
+) `t`
+ORDER BY
+    `t`.`OrderPath`,
+    `t`.`IsProduct`,
+    `t`.`Name`
